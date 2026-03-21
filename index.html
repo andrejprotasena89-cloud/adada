@@ -12,86 +12,58 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; margin: 0; }
         .old-money { font-family: 'Cinzel', serif; color: #f2e3c6; letter-spacing: 3px; }
-        
-        /* Сетка товаров */
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; padding-bottom: 100px; }
-        
-        /* Карточка товара с анимацией */
-        .item-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 4px; overflow: hidden; transition: 0.3s; opacity: 0; transform: translateY(10px); animation: fadeIn 0.5s forwards; }
-        .item-card:active { transform: scale(0.98); }
-        .item-card img { width: 100%; height: 220px; object-fit: cover; filter: grayscale(10%); }
+        .item-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 4px; overflow: hidden; transition: 0.3s; position: relative; }
+        .item-card img { width: 100%; height: 220px; object-fit: cover; background: #111; }
         .item-info { padding: 12px; border-top: 1px solid #1a1a1a; text-align: center; }
-        
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-
-        /* Админка (CMS) */
+        .btn-gold { background: #f2e3c6; color: #000; font-weight: 700; padding: 12px; width: 100%; text-transform: uppercase; border-radius: 4px; display: block; }
+        .btn-order { border: 1px solid #f2e3c6; color: #f2e3c6; padding: 10px; width: 100%; margin-top: 10px; border-radius: 2px; text-transform: uppercase; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-order:active { background: #f2e3c6; color: #000; }
         #admin-panel { display: none; position: fixed; inset: 0; background: #000; z-index: 100; padding: 25px; overflow-y: auto; }
-        .input-gold { background: #0a0a0a; border: 1px solid #222; color: #fff; padding: 14px; border-radius: 4px; width: 100%; margin-bottom: 12px; outline: none; transition: 0.3s; font-size: 14px; }
-        .input-gold:focus { border-color: #f2e3c6; }
-        
-        .btn-gold { background: #f2e3c6; color: #000; font-weight: 700; padding: 14px; width: 100%; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; margin-top: 10px; }
-        .btn-outline { border: 1px solid #f2e3c6; color: #f2e3c6; padding: 8px; width: 100%; margin-top: 10px; border-radius: 2px; text-transform: uppercase; font-size: 10px; font-weight: 600; }
-        
-        .admin-btn-trigger { position: fixed; top: 15px; right: 15px; font-size: 10px; border: 1px solid #333; padding: 6px 10px; border-radius: 4px; color: #555; z-index: 50; text-transform: uppercase; }
-        
-        /* Скелетон/Загрузка */
-        .loader { border: 2px solid #1a1a1a; border-top: 2px solid #f2e3c6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .input-gold { background: #0a0a0a; border: 1px solid #222; color: #fff; padding: 12px; border-radius: 4px; width: 100%; margin-bottom: 10px; outline: none; }
+        .hidden { display: none !important; }
+        .admin-btn-trigger { position: fixed; bottom: 20px; right: 20px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 50%; z-index: 99; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <header class="pt-12 pb-8 text-center border-b border-zinc-900 bg-black">
+    <header class="pt-10 pb-6 text-center bg-black">
         <h1 class="old-money text-3xl">VANTAGE</h1>
-        <p class="text-[9px] tracking-[6px] text-zinc-600 mt-2 uppercase font-light">Elegance & Power • 2026</p>
+        <p class="text-[8px] tracking-[5px] text-zinc-600 mt-2 uppercase">Quality Over Quantity</p>
     </header>
 
-    <button id="admin-trigger" class="admin-btn-trigger hidden" onclick="toggleAdmin()">CMS Panel</button>
+    <div id="shop-grid" class="grid-container">
+        </div>
 
-    <div id="loading" class="loader"></div>
-    <div id="shop-grid" class="grid-container"></div>
+    <button id="admin-trigger" class="admin-btn-trigger hidden" onclick="toggleAdmin()">⚙️</button>
 
     <div id="admin-panel">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="old-money text-xl">NEW ARTIKUL</h2>
-            <button onclick="toggleAdmin()" class="text-zinc-500 text-3xl">&times;</button>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="old-money text-xl">ADD ITEM</h2>
+            <button onclick="toggleAdmin()" class="text-3xl">&times;</button>
         </div>
-        
-        <div class="space-y-2">
-            <input type="text" id="p-name" class="input-gold" placeholder="Название (напр. Black Silk Polo)">
-            <input type="text" id="p-price" class="input-gold" placeholder="Цена (напр. 15 900 ₽)">
-            <input type="text" id="p-img" class="input-gold" placeholder="Прямая ссылка на фото (URL)">
-            <button class="btn-gold" onclick="addProduct()">Добавить на витрину</button>
-        </div>
-        
-        <p class="text-[10px] text-zinc-600 mt-10 text-center uppercase tracking-widest">Vantage CMS v2.1</p>
+        <input type="text" id="p-name" class="input-gold" placeholder="Название">
+        <input type="text" id="p-price" class="input-gold" placeholder="Цена">
+        <input type="text" id="p-img" class="input-gold" placeholder="Ссылка на фото (.jpg / .png)">
+        <button class="btn-gold" onclick="addProduct()">Опубликовать</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
 
-        // ДАННЫЕ АДМИНИСТРАТОРОВ
-        const ADMIN_IDS = [5600643729, 6382941057];
+        const ADMIN_IDS = [7764872610, 7771254911]; 
+        const MANAGER_USERNAME = "andrejprotasena89-cloud"; // Твой ник в ТГ БЕЗ @ (куда пойдет заказ)
+        
         const currentUser = tg.initDataUnsafe.user?.id;
-
-        // Показываем кнопку только админам
         if (ADMIN_IDS.includes(currentUser)) {
             document.getElementById('admin-trigger').classList.remove('hidden');
         }
 
-        // КОНФИГУРАЦИЯ FIREBASE (Твои ключи)
         const firebaseConfig = {
             apiKey: "AIzaSyCqoOfanx6bw08t3YnVKFji0f8Gz7vdLfk",
-            authDomain: "vantage-shop.firebaseapp.com",
-            projectId: "vantage-shop",
-            storageBucket: "vantage-shop.firebasestorage.app",
-            messagingSenderId: "402961704979",
-            appId: "1:402961704979:web:aa520422102529829e77e6",
             databaseURL: "https://vantage-shop-default-rtdb.firebaseio.com/"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref("products");
 
@@ -101,43 +73,35 @@
         }
 
         function addProduct() {
-            const name = document.getElementById('p-name').value.trim();
-            const price = document.getElementById('p-price').value.trim();
-            const img = document.getElementById('p-img').value.trim();
-
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const img = document.getElementById('p-img').value;
             if (name && price && img) {
                 db.push({ name, price, img });
-                alert("Товар успешно добавлен!");
-                document.getElementById('p-name').value = "";
-                document.getElementById('p-price').value = "";
-                document.getElementById('p-img').value = "";
+                alert("Улетело в базу!");
                 toggleAdmin();
-            } else {
-                alert("Заполни все поля, бро!");
             }
         }
 
-        // Загрузка и отображение товаров
+        // ГЛАВНОЕ: Функция заказа
+        function makeOrder(name, price) {
+            const text = encodeURIComponent(`Привет! Хочу заказать: ${name}\nЦена: ${price}`);
+            // Открываем чат с тобой
+            window.open(`https://t.me/${MANAGER_USERNAME}?text=${text}`, '_blank');
+        }
+
         db.on("value", (snap) => {
-            const shopGrid = document.getElementById('shop-grid');
-            const loader = document.getElementById('loading');
-            shopGrid.innerHTML = "";
-            loader.style.display = "none";
-
-            if (!snap.exists()) {
-                shopGrid.innerHTML = "<p class='col-span-2 text-center text-zinc-500 text-xs mt-10'>Витрина пока пуста...</p>";
-                return;
-            }
-
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = "";
             snap.forEach((child) => {
                 const p = child.val();
-                shopGrid.insertAdjacentHTML('beforeend', `
+                grid.insertAdjacentHTML('beforeend', `
                     <div class="item-card">
-                        <img src="${p.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x400?text=No+Photo'">
+                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/300x400?text=Check+Link'">
                         <div class="item-info">
-                            <div class="text-[10px] font-bold uppercase tracking-widest text-white">${p.name}</div>
+                            <div class="text-[10px] font-bold uppercase text-white">${p.name}</div>
                             <div class="text-[#f2e3c6] text-[11px] font-bold mt-1">${p.price}</div>
-                            <button class="btn-outline">Order Now</button>
+                            <button class="btn-order" onclick="makeOrder('${p.name}', '${p.price}')">Order Now</button>
                         </div>
                     </div>
                 `);
